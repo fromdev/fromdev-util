@@ -1,13 +1,19 @@
 package com.fromdev.automation.util;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+
+import com.google.gson.Gson;
 
 public class StringUtil {
 	public static final String SPECIAL_CHAR_PATTERN = "[-+.^:,]";
@@ -106,7 +112,11 @@ public class StringUtil {
 	}
 
 	public static boolean notNullOrEmpty(String s) {
-		return !( s == null || "".equals(s));
+		return !(s == null || "".equals(s));
+	}
+
+	public static String ensureNotNullOrEmpty(String s, String defaultValue) {
+		return notNullOrEmpty(s) ? s : defaultValue;
 	}
 
 	public static String[] splitOrDefault(String s, String[] old) {
@@ -124,9 +134,81 @@ public class StringUtil {
 			Scanner s = new Scanner(url.openStream());
 			return s.useDelimiter("\\Z").next();
 		} catch (Exception e) {
-			System.out.println("Error reading remote file " + fileUrl + " " + e.getMessage());
+			System.out.println("Error reading remote file " + fileUrl + " "
+					+ e.getMessage());
 		}
 		return "";
+	}
+
+	public static Map readRemoteJson(String fileUrl) {
+		URL url;
+		try {
+			url = new URL(fileUrl);
+
+			Scanner s = new Scanner(url.openStream());
+			String val = s.useDelimiter("\\Z").next();
+			Gson gson = new Gson();
+			Map map = gson.fromJson(val, HashMap.class);
+			return map;
+		} catch (Exception e) {
+			System.out.println("Error reading remote json " + fileUrl + " "
+					+ e.getMessage());
+		}
+		return new HashMap();
+	}
+
+	public static boolean isBufferEmpty(String bufferUrl) {
+		Map jsonMap = readRemoteJson(bufferUrl);
+		boolean bufferEmpty = false;
+		Object total = jsonMap.get("total");
+		if (total != null) {
+			if (total instanceof Double) {
+				bufferEmpty = ((Double) total) == 0f;
+			} else if (total instanceof Long) {
+				bufferEmpty = ((Long) total) == 0L;
+			}
+		}
+		return bufferEmpty;
+	}
+
+	public static String getStackTrace(Throwable t) {
+
+		if (t != null) {
+
+			StringWriter sw = new StringWriter();
+
+			PrintWriter pw = new PrintWriter(sw);
+
+			t.printStackTrace(pw);
+
+			pw.close();
+
+			return sw.toString();
+
+		} else {
+
+			return "";
+
+		}
+	}
+
+	public static boolean isNotNull(String s) {
+		return (s != null && !s.equals(""));
+	}
+
+	public static boolean isNullOrEmpty(String s) {
+		return (s == null || s.equals(""));
+	}
+
+	public static String trim(Throwable t, int limit) {
+		return trim(getStackTrace(t), limit);
+	}
+
+	public static String trim(String s, int limit) {
+		if (isNotNull(s) && s.length() > limit) {
+			return s.substring(0, limit);
+		}
+		return s;
 	}
 
 	public static void main(String[] args) {
@@ -136,7 +218,7 @@ public class StringUtil {
 		String s = readRemoteFile("https://raw.github.com/fromdev/fromdev-static/gh-pages/release/web-dev-feeds.txt");
 		// System.out
 		// .println(s);
-		String [] old = {""};
+		String[] old = { "" };
 		String[] list = splitOrDefault(s, old);
 		for (int i = 0; i < list.length; i++) {
 			System.out.print(list[i] + ", ");
