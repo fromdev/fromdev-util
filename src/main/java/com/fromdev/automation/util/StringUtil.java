@@ -211,6 +211,15 @@ public class StringUtil {
 		return s;
 	}
 
+	public static String[] readRemoteFileAsStringArray(String fileUrl) {
+		String[] lines = null;
+		String fileString = readRemoteFile(fileUrl);
+		if (StringUtil.isNotNull(fileString)) {
+			lines = fileString.split("\n");
+		}
+		return lines;
+	}
+
 	public static void main(String[] args) {
 		// System.out.println(removeUrlParams("http://net.tutsplus.com/tutorials/tools-and-tips/two-factor-auth-using-authy/"));
 		// String s =
@@ -225,4 +234,5 @@ public class StringUtil {
 		}
 
 	}
+
 }
