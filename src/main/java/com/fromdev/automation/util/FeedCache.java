@@ -27,12 +27,28 @@ public class FeedCache {
 		cache.clear();
 	}
 
-	public static ShareableItem getRandomItem() {
+	public static ShareableItem getSpinnedRandomItem() {
+		ShareableItem item = null;
 		if (cache.size() > 1) {
 			int random = getRandomInCacheSizeRange();
-			return cache.remove(random);
+			item = cache.remove(random);
+			try {
+				if (item != null)
+					item.setDescription(StringUtil.spin(item.getDescription()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		return null;
+		return item;
+	}
+
+	public static ShareableItem getRandomItem() {
+		ShareableItem item = null;
+		if (cache.size() > 1) {
+			int random = getRandomInCacheSizeRange();
+			item = cache.remove(random);
+		}
+		return item;
 	}
 
 	private static int getRandomInCacheSizeRange() {

@@ -1,16 +1,27 @@
 package com.fromdev.automation.util;
 
-import java.util.List;
-
 public class Thesaurus {
 
-	private WordIndex idx = null;
+	private HashBasedReverseIndex idx = new HashBasedReverseIndex();
 
-	public Thesaurus() {
-		WordIndex idx = WordIndex.getInstance();
-		String[] wordsArray = StringUtil
-				.readRemoteFileAsStringArray("https://raw.githubusercontent.com/fromdev/fromdev-static/gh-pages/release/thesaurus.txt");
+	private String src = "https://raw.githubusercontent.com/fromdev/fromdev-static/gh-pages/release/thesaurus.txt";
+	private static Thesaurus singleton = new Thesaurus();
 
+	public static Thesaurus getInstance() {
+		return singleton;
+	}
+
+	private Thesaurus(String source) {
+		this.src = source;
+		load();
+	}
+
+	private Thesaurus() {
+		load();
+	}
+
+	public void load() {
+		String[] wordsArray = StringUtil.readRemoteFileAsStringArray(src);
 		try {
 			for (int i = 0; i < wordsArray.length; i++) {
 				idx.add(wordsArray[i]);
@@ -18,14 +29,12 @@ public class Thesaurus {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public String suggestSynonym(String word) {
 		String suggestion = word;
 		try {
-			List<String> synonyms = idx.search(word);
-			suggestion = RandomUtil.pickRandom(synonyms);
+			suggestion = idx.findOneRandom(word);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

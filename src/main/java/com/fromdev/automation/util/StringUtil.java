@@ -1,5 +1,7 @@
 package com.fromdev.automation.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -126,6 +128,26 @@ public class StringUtil {
 		return old;
 	}
 
+	public static String readFile(String fileUrl) {
+		if (isNotNull(fileUrl)) {
+			File f = new File(fileUrl);
+			if (f.exists()) {
+				Scanner s = null;
+				try {
+					s = new Scanner(f);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return s != null ? s.useDelimiter("\\Z").next() : "";
+			} else {
+				System.out.println("File does not exist or wrong path ! "
+						+ fileUrl);
+			}
+		}
+		return "";
+	}
+
 	public static String readRemoteFile(String fileUrl) {
 		URL url;
 		try {
@@ -218,6 +240,36 @@ public class StringUtil {
 			lines = fileString.split("\n");
 		}
 		return lines;
+	}
+
+	public static String toCamelCase(String s) {
+		return s != null ? s.substring(0, 1).toUpperCase()
+				+ s.substring(1).toLowerCase() : s;
+	}
+
+	public static String spin(String text) throws Exception {
+		String spinned = text;
+		if (notNullOrEmpty(text)) {
+			String[] words = text.split(" ");
+			for (int i = 0; i < words.length; i++) {
+				try {
+					String suggested = Thesaurus.getInstance().suggestSynonym(
+							words[i]);
+					if (notNullOrEmpty(suggested)) {
+						spinned = spinned.replace(" " + words[i] + " ",
+								" " + toCamelCase(suggested) + " ");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+		return spinned;
+	}
+
+	public static String removeSpecialChars(String s) {
+		return s != null ? s.replaceAll("[^a-zA-Z0-9]+", "") : s;
 	}
 
 	public static void main(String[] args) {

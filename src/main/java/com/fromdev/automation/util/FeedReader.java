@@ -98,7 +98,9 @@ public class FeedReader implements Runnable {
 				}
 
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				e.printStackTrace();
+				System.out.println("Failed loading of feed " + feedUrl);
+				System.out.println("Ignore and move to next");
 			} finally {
 				if (reader != null)
 					try {

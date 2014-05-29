@@ -1,7 +1,9 @@
 package com.fromdev.automation.util;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -82,6 +84,21 @@ public class WebDriverUtil {
 
 		}
 		return element;
+	}
+	
+	public static Set<String> findAllLinks(WebDriver driver,String url) {
+		driver.get(url);
+		List<WebElement> link = driver.findElements(By.tagName("a"));
+		Set<String> uniqueLinks = new HashSet<String>();
+
+		for (WebElement ele : link) {
+			String href = ele.getAttribute("href");
+			if (!LinkChecker.canSkip(href)) {
+				uniqueLinks.add(href);
+			}
+		}
+		System.out.println("found " + uniqueLinks.size());
+		return uniqueLinks;
 	}
 
 }

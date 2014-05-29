@@ -50,7 +50,7 @@ public class FeedRandomizerServlet extends HttpServlet {
 	}
 
 	protected String findItem() {
-		ShareableItem item = FeedCache.getRandomItem();
+		ShareableItem item = FeedCache.getSpinnedRandomItem();
 		String itemRss = "";
 		if (item != null) {
 			itemRss = item.toRssItem();

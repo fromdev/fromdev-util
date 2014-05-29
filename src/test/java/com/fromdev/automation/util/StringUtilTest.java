@@ -39,4 +39,23 @@ public class StringUtilTest extends TestCase {
 				.readRemoteFile("https://raw.github.com/fromdev/fromdev-static/gh-pages/release/web-dev-feeds.txt");
 		assertTrue(s.indexOf("www.fromdev.com") > -1);
 	}
+	public void testSpin() throws Exception {
+		String title = "How to create a scrollable splash screen with CSS3 and jQuery";
+		for (int i = 0; i < 10; i++) {
+			System.out.println(StringUtil
+					.spin(title));
+		}
+		String[] words = title.split(" ");
+		for (int i = 0; i < words.length; i++) {
+			System.out.println(StringUtil.toCamelCase(words[i]) + " === " + title.replace(words[i],
+					StringUtil.toCamelCase(words[i])) );
+		}
+		
+	}
+
+	public void testReadFile() {
+		String s = StringUtil
+				.readFile("/Users/sjoshi/Downloads/www-fromdev-com_20140527T174917Z_CrawlErrors.csv");
+		assertTrue(s.indexOf("www.fromdev.com") > -1);
+	}
 }
