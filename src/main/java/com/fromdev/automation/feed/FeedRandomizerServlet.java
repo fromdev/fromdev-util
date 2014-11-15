@@ -29,17 +29,23 @@ public class FeedRandomizerServlet extends HttpServlet {
 	 * default feed list to load in case cache is empty
 	 */
 	private String feedList;
+	private String feedUrl;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init();
 		feedList = config.getInitParameter("feedList");
+		feedUrl = config.getInitParameter("feedUrl");
 	}
 
 	private void initFeedCache() {
-		String[] feeds = { "http://feeds.feedburner.com/Fromdev" };
-		feeds = StringUtil.splitOrDefault(feedList, feeds);
-		FeedReader.loadFeeds(feeds);
+		try{
+			FeedReader.loadFeedsFrom(feedUrl);
+		}catch(Exception e) {
+			String[] feeds = { "http://feeds.feedburner.com/Fromdev" };
+			feeds = StringUtil.splitOrDefault(feedList, feeds);
+			FeedReader.loadFeeds(feeds);
+		}
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
