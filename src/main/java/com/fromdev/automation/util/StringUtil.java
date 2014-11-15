@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +67,8 @@ public class StringUtil {
 			"within", "without", "would", "yet", "you", "your", "yours",
 			"yourself", "yourselves", "the" };
 	private static Set stopWrods = new HashSet(Arrays.asList(sw));
+	private static Gson gson = new Gson();
+
 
 	public static Set extractTags(String text) {
 		Set tags = extractWrods(text);
@@ -241,6 +244,16 @@ public class StringUtil {
 		}
 		return lines;
 	}
+	
+	public static Map<String,ArrayList<String>> readRemoteFileAsMap(String fileUrl) {
+		HashMap<String,ArrayList<String>> map = new HashMap<String,ArrayList<String>>();
+		String fileString = readRemoteFile(fileUrl);
+		
+		if (StringUtil.isNotNull(fileString)) {
+			map = gson.fromJson(fileString, map.getClass());
+		}
+		return map;
+	}
 
 	public static String toCamelCase(String s) {
 		return s != null ? s.substring(0, 1).toUpperCase()
@@ -267,6 +280,21 @@ public class StringUtil {
 		}
 		return spinned;
 	}
+	
+	public static String getSpinnedTitleForUrl(String url) throws Exception {
+		String spinned = null;
+		if (notNullOrEmpty(url)) {
+			try {
+				String suggested = TitleSpinner.getInstance().suggestTitle(url);
+				if (notNullOrEmpty(suggested)) {
+					spinned = suggested;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return spinned;
+	}
 
 	public static String removeSpecialChars(String s) {
 		return s != null ? s.replaceAll("[^a-zA-Z0-9]+", "") : s;
@@ -284,7 +312,15 @@ public class StringUtil {
 		for (int i = 0; i < list.length; i++) {
 			System.out.print(list[i] + ", ");
 		}
-
+		Map<String,HashSet<String>> hm = new HashMap<String,HashSet<String>>();
+		HashSet<String> hs = new HashSet<String>();
+		hs.add("1");
+		hs.add("2");
+		hm.put("test", hs);
+		hm.put("test2", hs);
+		
+		System.out.println();
+		System.out.println((new Gson()).toJson(hm));
 	}
 
 }

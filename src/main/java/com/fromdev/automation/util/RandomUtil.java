@@ -1,6 +1,9 @@
 package com.fromdev.automation.util;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class RandomUtil {
@@ -27,6 +30,15 @@ public class RandomUtil {
 			val = pickRandom(s.toArray(tmp));
 		}
 		return val;
+	}
+	
+	public static String pickRandom(Map<String,ArrayList<String>> col, String key) {
+		String result = null;
+		if (StringUtil.isNotNull(key)) {
+			ArrayList<String> res = col.get(key.toLowerCase());
+			result = RandomUtil.pickRandom(res);
+		}
+		return result != null ? result : key;
 	}
 
 	public static int getNumberBetween(int start, int end) {

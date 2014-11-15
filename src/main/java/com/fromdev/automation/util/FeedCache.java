@@ -33,8 +33,14 @@ public class FeedCache {
 			int random = getRandomInCacheSizeRange();
 			item = cache.remove(random);
 			try {
-				if (item != null)
-					item.setDescription(StringUtil.spin(item.getDescription()));
+				if (item != null) {
+					String manuallySpinnedTitle = StringUtil.getSpinnedTitleForUrl(item.getUrl());
+					if(StringUtil.isNullOrEmpty(manuallySpinnedTitle) 
+							|| manuallySpinnedTitle.equals(item.getUrl())) {
+						//Try word spinning if titles is not available
+						item.setDescription(StringUtil.spin(item.getDescription()));
+					}
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

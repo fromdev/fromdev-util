@@ -1,8 +1,13 @@
 package com.fromdev.automation.util;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import com.google.gson.Gson;
 
 /**
  * Unit test for simple App.
@@ -57,5 +62,20 @@ public class StringUtilTest extends TestCase {
 		String s = StringUtil
 				.readFile("/Users/sjoshi/Downloads/www-fromdev-com_20140527T174917Z_CrawlErrors.csv");
 		assertTrue(s.indexOf("www.fromdev.com") > -1);
+	}
+	
+	public void testReadRemoteFileAsMap() {
+		@SuppressWarnings("unchecked")
+		Map<String,ArrayList<String>> s = StringUtil
+				.readRemoteFileAsMap("https://raw.githubusercontent.com/fromdev/fromdev-static/gh-pages/release/spin.txt");
+		assertTrue(s.containsKey("test"));
+		System.out.println(s.get("test"));
+		
+	}
+	
+	public void testGetSpinnedTitleForUrl() throws Exception {
+		for (int i = 0; i < 10; i++) {
+			assertNotNull(StringUtil.getSpinnedTitleForUrl("test"));
+		}
 	}
 }
