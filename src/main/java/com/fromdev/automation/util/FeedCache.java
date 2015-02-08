@@ -32,18 +32,23 @@ public class FeedCache {
 		if (cache.size() > 1) {
 			int random = getRandomInCacheSizeRange();
 			item = cache.remove(random);
-			try {
-				if (item != null) {
-					String manuallySpinnedTitle = StringUtil.getSpinnedTitleForUrl(item.getUrl());
-					if(StringUtil.isNullOrEmpty(manuallySpinnedTitle) 
-							|| manuallySpinnedTitle.equals(item.getUrl())) {
-						//Try word spinning if titles is not available
-						item.setDescription(StringUtil.spin(item.getDescription()));
-					}
+			item = spin(item);
+		}
+		return item;
+	}
+
+	private static ShareableItem spin(ShareableItem item) {
+		try {
+			if (item != null) {
+				String manuallySpinnedTitle = StringUtil.getSpinnedTitleForUrl(item.getUrl());
+				if(StringUtil.isNullOrEmpty(manuallySpinnedTitle) 
+						|| manuallySpinnedTitle.equals(item.getUrl())) {
+					//Try word spinning if titles is not available
+					item.setDescription(StringUtil.spin(item.getDescription()));
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return item;
 	}
