@@ -286,6 +286,7 @@ public class StringUtil {
 		if (notNullOrEmpty(url)) {
 			try {
 				String suggested = TitleSpinner.getInstance().suggestTitle(url);
+				//System.out.println("Suggested spin for " + url + " is " + suggested);
 				if (notNullOrEmpty(suggested)) {
 					spinned = suggested;
 				}

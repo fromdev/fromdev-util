@@ -75,7 +75,9 @@ public class StringUtilTest extends TestCase {
 	
 	public void testGetSpinnedTitleForUrl() throws Exception {
 		for (int i = 0; i < 10; i++) {
-			assertNotNull(StringUtil.getSpinnedTitleForUrl("test"));
+			String t = StringUtil.getSpinnedTitleForUrl("http://www.fromdev.com/2013/07/best-drupal-themes.html");
+			assertNotNull(t);
+			System.out.println(t);
 		}
 	}
 }
