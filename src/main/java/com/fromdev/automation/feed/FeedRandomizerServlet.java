@@ -12,6 +12,7 @@ import com.fromdev.automation.feed.model.ShareableItem;
 import com.fromdev.automation.util.FeedCache;
 import com.fromdev.automation.util.FeedReader;
 import com.fromdev.automation.util.StringUtil;
+import com.fromdev.automation.util.TimeBoundCache;
 
 @SuppressWarnings("serial")
 public class FeedRandomizerServlet extends HttpServlet {
@@ -30,12 +31,22 @@ public class FeedRandomizerServlet extends HttpServlet {
 	 */
 	private String feedList;
 	private String feedUrl;
+	private int hours2Cache = 8;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init();
 		feedList = config.getInitParameter("feedList");
 		feedUrl = config.getInitParameter("feedUrl");
+		
+		String hrsstr = config.getInitParameter("hours2Cache");
+		if(StringUtil.notNullOrEmpty(hrsstr)) {
+			try {
+				hours2Cache = Integer.parseInt(hrsstr);
+			}catch(NumberFormatException e) {
+				//use default value of cache
+			}
+		}
 	}
 
 	private void initFeedCache() {
@@ -50,12 +61,19 @@ public class FeedRandomizerServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		String itemRss = findItem();
+		String itemRss = findItemInTimedCache();
 		resp.setContentType(APPLICATION_RSS_XML);
 		resp.getWriter().println(rssPrefix + itemRss + rssSuffix);
 	}
 
+	protected String findItemInTimedCache() {
+		if(StringUtil.isNullOrEmpty(TimeBoundCache.getCache())) {
+			TimeBoundCache.setCacheForHours(findItem(), hours2Cache);
+		}
+		return TimeBoundCache.getCache();
+	}
 	protected String findItem() {
+		
 		ShareableItem item = FeedCache.getSpinnedRandomItem();
 		String itemRss = "";
 		if (item != null) {
