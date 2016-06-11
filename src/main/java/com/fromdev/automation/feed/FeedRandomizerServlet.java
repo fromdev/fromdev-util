@@ -18,12 +18,16 @@ import com.fromdev.automation.util.TimeBoundCache;
 public class FeedRandomizerServlet extends HttpServlet {
 	public static final String APPLICATION_RSS_XML = "application/rss+xml";
 	String appBaseUrl = "http://feedrandomizer.appspot.com/";
+	protected String feedTitle = "Feed Randomizer";
 	String appFeedUrl = appBaseUrl + "feedrandomizer";
-	protected final String rssPrefix = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\"\n    xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n    xmlns:wfw=\"http://wellformedweb.org/CommentAPI/\"\n    xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n    xmlns:atom=\"http://www.w3.org/2005/Atom\"\n>\n\n<channel>\n    <title>Feed Randomizer</title>\n    <link>"
+
+	protected final String getRssPrefix() { 
+		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\"\n    xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n    xmlns:wfw=\"http://wellformedweb.org/CommentAPI/\"\n    xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n    xmlns:atom=\"http://www.w3.org/2005/Atom\"\n>\n\n<channel>\n    <title>" + feedTitle + "</title>\n    <link>"
 			+ appBaseUrl
 			+ "</link>\n    <atom:link href=\""
 			+ appFeedUrl
 			+ "\" rel=\"self\" type=\"application/rss+xml\" />\n    <description>Feed Randomizer</description>\n    <language>en</language>";
+	}
 	protected final String rssSuffix = "</channel>\n</rss>";
 
 	/**
@@ -38,18 +42,10 @@ public class FeedRandomizerServlet extends HttpServlet {
 		super.init();
 		feedList = config.getInitParameter("feedList");
 		feedUrl = config.getInitParameter("feedUrl");
-		
-		String hrsstr = config.getInitParameter("hours2Cache");
-		if(StringUtil.notNullOrEmpty(hrsstr)) {
-			try {
-				hours2Cache = Integer.parseInt(hrsstr);
-			}catch(NumberFormatException e) {
-				//use default value of cache
-			}
-		}
+		hours2Cache = StringUtil.getInt(config.getInitParameter("hours2Cache"),hours2Cache);
 	}
 
-	private void initFeedCache() {
+	protected void initFeedCache() {
 		try{
 			FeedReader.loadFeedsFrom(feedUrl);
 		}catch(Exception e) {
@@ -63,7 +59,7 @@ public class FeedRandomizerServlet extends HttpServlet {
 			throws IOException {
 		String itemRss = findItemInTimedCache();
 		resp.setContentType(APPLICATION_RSS_XML);
-		resp.getWriter().println(rssPrefix + itemRss + rssSuffix);
+		resp.getWriter().println(getRssPrefix() + itemRss + rssSuffix);
 	}
 
 	protected String findItemInTimedCache() {

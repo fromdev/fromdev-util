@@ -89,12 +89,14 @@ public class FeedReader implements Runnable {
 					// + ", " + entry.getUri());
 					ShareableItem item = new ShareableItem();
 					item.setUrl(entry.getLink());
-					item.setTags(StringUtil.extractTags(entry.getTitle()));
-					item.setDescription(entry.getTitle().replaceAll(
+					String desc = entry.getDescription().getValue();
+					item.setTags(StringUtil.extractTags(entry.getTitle() + " " + desc));
+					item.setTitle(entry.getTitle().replaceAll(
 							StringUtil.SPECIAL_CHAR_PATTERN, ""));
+					item.setDescription(StringUtil.trimToChar(desc, "<"));
 					FeedCache.add(item);
-					System.out.println("Caching Progress... "
-							+ FeedCache.cache().size());
+//					System.out.println("Caching Progress... "
+//							+ FeedCache.cache().size());
 				}
 
 			} catch (Exception e) {

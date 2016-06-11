@@ -35,7 +35,7 @@ public class FeedOnBufferEmptyServlet extends FeedRandomizerServlet {
 			itemRss = super.findItem();
 		}
 		resp.setContentType(APPLICATION_RSS_XML);
-		resp.getWriter().println(rssPrefix + itemRss + rssSuffix);
+		resp.getWriter().println(getRssPrefix() + itemRss + rssSuffix);
 	}
 
 	protected String getAccessToken(HttpServletRequest req) {

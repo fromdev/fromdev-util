@@ -15,11 +15,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 
 public class StringUtil {
 	public static final String SPECIAL_CHAR_PATTERN = "[-+.^:,]";
+	public static final String ALPHA_NUM_PATTERN = "[^A-Za-z0-9]";
 	private static String[] sw = { "a", "about", "above", "above", "across",
 			"after", "afterwards", "again", "against", "all", "almost",
 			"alone", "along", "already", "also", "although", "always", "am",
@@ -65,10 +68,11 @@ public class StringUtil {
 			"wherever", "whether", "which", "while", "whither", "who",
 			"whoever", "whole", "whom", "whose", "why", "will", "with",
 			"within", "without", "would", "yet", "you", "your", "yours",
-			"yourself", "yourselves", "the" };
+			"yourself", "yourselves", "the" , "forth", "including", "keen", "known"};
 	private static Set stopWrods = new HashSet(Arrays.asList(sw));
 	private static Gson gson = new Gson();
-
+	
+	private static Pattern  regex = Pattern.compile(ALPHA_NUM_PATTERN);
 
 	public static Set extractTags(String text) {
 		Set tags = extractWrods(text);
@@ -78,11 +82,20 @@ public class StringUtil {
 	}
 
 	public static Set extractWrods(String text) {
-		text = text.replaceAll(SPECIAL_CHAR_PATTERN, "");
+		//text = text.replaceAll(SPECIAL_CHAR_PATTERN, "");
 		text = text.toLowerCase();
 		String[] wordArray = text.split(" ");
+		Set<String> words = new HashSet();
+		for(int i =0;wordArray!=null && i<wordArray.length;i++) {
+			if(StringUtil.notNullOrEmpty(wordArray[i]) && wordArray[i].length() > 2) { 
+			Matcher matcher = regex.matcher(wordArray[i] );
+				if(!matcher.find()) {
+					words.add(wordArray[i]);
+				}
+			}
+		}
 
-		return new HashSet(Arrays.asList(wordArray));
+		return words;
 	}
 
 	public static String getRedirectedUrl(String link) {
@@ -230,10 +243,17 @@ public class StringUtil {
 	}
 
 	public static String trim(String s, int limit) {
-		if (isNotNull(s) && s.length() > limit) {
+		if (isNotNull(s) && s.length() > limit && limit > 0) {
 			return s.substring(0, limit);
 		}
 		return s;
+	}
+	public static String trimToChar(String s, String startChar) {
+		int idx = 300;
+		if(isNotNull(s)) {
+			idx = s.indexOf(startChar);
+		}
+		return trim(s,idx);
 	}
 
 	public static String[] readRemoteFileAsStringArray(String fileUrl) {
@@ -299,6 +319,18 @@ public class StringUtil {
 
 	public static String removeSpecialChars(String s) {
 		return s != null ? s.replaceAll("[^a-zA-Z0-9]+", "") : s;
+	}
+
+	public static int getInt(String s, int defaultValue) {
+		int retValue = defaultValue;
+		if(notNullOrEmpty(s)) {
+			try {
+				retValue = Integer.parseInt(s);
+			} catch(Exception e) {
+				//use default value instead
+			}
+		}
+		return retValue;
 	}
 
 	public static void main(String[] args) {

@@ -44,9 +44,9 @@ public class FeedCache {
 				if(StringUtil.isNullOrEmpty(manuallySpinnedTitle) 
 						|| manuallySpinnedTitle.equals(item.getUrl())) {
 					//Try word spinning if titles is not available
-					item.setDescription(StringUtil.spin(item.getDescription()));
+					item.setTitle(StringUtil.spin(item.getTitle()));
 				} else {
-					item.setDescription(manuallySpinnedTitle);
+					item.setTitle(manuallySpinnedTitle);
 				}
 			}
 		} catch (Exception e) {
